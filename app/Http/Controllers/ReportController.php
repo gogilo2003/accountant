@@ -14,7 +14,15 @@ class ReportController extends Controller
     public function dashboard()
     {
         return Inertia::render('Dashboard', [
-            'stats' => $this->reportService->getDashboardSummary()
+            'stats' => [
+                'revenue' => $this->reportService->getCurrentMonthRevenue(),
+                'outstanding' => $this->reportService->getOutstandingRevenue(),
+                'clients' => $this->reportService->getActiveClientCount(),
+                'transactions' => $this->reportService->getThisMonthTransactionCount()
+            ],
+            'recentTransactions' => $this->reportService->getRecentTransactions(5),
+            'recentInvoices' => $this->reportService->getRecentInvoices(5),
+            'chartData' => $this->reportService->getRevenueChartData()
         ]);
     }
 

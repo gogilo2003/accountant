@@ -2,6 +2,8 @@
 
 namespace App\Interfaces;
 
+use Illuminate\Support\Carbon;
+
 interface TransactionRepositoryInterface
 {
     public function all();
@@ -20,4 +22,5 @@ interface TransactionRepositoryInterface
     public function getTotalCredits($clientId = null, $startDate = null, $endDate = null);
     public function getTotalDebits($clientId = null, $startDate = null, $endDate = null);
     public function getPeriodicSummary($startDate, $endDate);
+    public function getCountBetweenDates(Carbon $startDate, Carbon $endDate): int;
 }

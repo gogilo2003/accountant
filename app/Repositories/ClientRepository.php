@@ -46,4 +46,11 @@ class ClientRepository implements ClientRepositoryInterface
             ->orWhere('email', 'like', "%{$query}%")
             ->paginate(10);
     }
+
+    public function countActiveClients(): int
+    {
+        return Client::whereHas('transactions', function ($query) {
+            $query->where('transaction_date', '>=', now()->subMonths(3));
+        })->count();
+    }
 }

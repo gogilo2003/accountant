@@ -2,6 +2,7 @@
 // app/Interfaces/InvoiceRepositoryInterface.php
 namespace App\Interfaces;
 
+
 interface InvoiceRepositoryInterface
 {
     // Basic CRUD Operations
@@ -37,4 +38,5 @@ interface InvoiceRepositoryInterface
 
     // Utility Methods
     public function exists($invoiceNumber);
+    public function getRecent(int $limit = 5);
 }

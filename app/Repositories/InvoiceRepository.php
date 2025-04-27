@@ -198,4 +198,11 @@ class InvoiceRepository implements InvoiceRepositoryInterface
     {
         return Invoice::where('invoice_number', $invoiceNumber)->exists();
     }
+    public function getRecent(int $limit = 5)
+    {
+        return Invoice::with(['client'])
+            ->orderBy('issue_date', 'desc')
+            ->limit($limit)
+            ->get();
+    }
 }

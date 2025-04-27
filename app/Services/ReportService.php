@@ -4,6 +4,7 @@
 namespace App\Services;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 use App\Interfaces\ClientRepositoryInterface;
 use App\Interfaces\InvoiceRepositoryInterface;
 use App\Interfaces\TransactionRepositoryInterface;
@@ -100,5 +101,101 @@ class ReportService
                 'end' => $endDate ? $endDate->format('Y-m-d') : 'Present'
             ]
         ];
+    }
+    public function getCurrentMonthRevenue(): float
+    {
+        $start = now()->startOfMonth();
+        $end = now()->endOfMonth();
+
+        return $this->transactionRepository->getTotalCredits(null, $start, $end);
+    }
+
+    public function getOutstandingRevenue(): float
+    {
+        return $this->invoiceRepository->getOutstandingRevenue();
+    }
+
+    public function getActiveClientCount(): int
+    {
+        return $this->clientRepository->countActiveClients();
+    }
+
+    public function getThisMonthTransactionCount(): int
+    {
+        $start = now()->startOfMonth();
+        $end = now()->endOfMonth();
+
+        return $this->transactionRepository->getCountBetweenDates($start, $end);
+    }
+
+
+    public function getRecentTransactions(int $limit = 5): array
+    {
+        return $this->transactionRepository->getRecent($limit)
+            ->map(function ($transaction) {
+                return [
+                    'id' => $transaction->id,
+                    'description' => $transaction->description,
+                    'amount' => $transaction->amount,
+                    'direction' => $transaction->direction,
+                    'transaction_date' => $transaction->transaction_date,
+                    'client' => $transaction->client?->only(['id', 'name']),
+                    'invoice' => $transaction->invoice?->only(['id', 'invoice_number'])
+                ];
+            })
+            ->toArray();
+    }
+
+    public function getRecentInvoices(int $limit = 5): array
+    {
+        return $this->invoiceRepository->getRecent($limit)
+            ->map(function ($invoice) {
+                return [
+                    'id' => $invoice->id,
+                    'invoice_number' => $invoice->invoice_number,
+                    'amount' => $invoice->amount,
+                    'status' => $invoice->status,
+                    'issue_date' => $invoice->issue_date,
+                    'client' => $invoice->client?->only(['id', 'name'])
+                ];
+            })
+            ->toArray();
+    }
+
+    public function getRevenueChartData(int $months = 6): array
+    {
+        return Cache::remember("revenue_chart_{$months}_months", now()->addHours(1), function () use ($months) {
+            $data = [];
+            $now = now();
+
+            for ($i = $months - 1; $i >= 0; $i--) {
+                $date = $now->copy()->subMonths($i);
+                $monthName = $date->format('M Y');
+
+                $startDate = $date->startOfMonth();
+                $endDate = $date->endOfMonth();
+
+                $revenue = $this->transactionRepository->getTotalCredits(
+                    clientId: null,
+                    startDate: $startDate,
+                    endDate: $endDate
+                );
+
+                $expenses = $this->transactionRepository->getTotalDebits(
+                    clientId: null,
+                    startDate: $startDate,
+                    endDate: $endDate
+                );
+
+                $data[] = [
+                    'month' => $monthName,
+                    'revenue' => $revenue,
+                    'expenses' => $expenses,
+                    'profit' => $revenue - $expenses
+                ];
+            }
+
+            return $data;
+        });
     }
 }

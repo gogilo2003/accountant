@@ -12,4 +12,5 @@ interface ClientRepositoryInterface
     public function delete($id);
     public function paginate($perPage = 10);
     public function search($query);
+    public function countActiveClients(): int;
 }

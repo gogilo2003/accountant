@@ -190,4 +190,10 @@ class TransactionRepository implements TransactionRepositoryInterface
             ->whereBetween('transaction_date', [$startDate, $endDate])
             ->first();
     }
+
+    public function getCountBetweenDates(Carbon $startDate, Carbon $endDate): int
+    {
+        return Transaction::whereBetween('transaction_date', [$startDate, $endDate])
+            ->count();
+    }
 }

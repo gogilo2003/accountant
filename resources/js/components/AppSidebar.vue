@@ -29,11 +29,11 @@ const mainNavItems: NavItem[] = [
         href: route('dashboard-transactions'),
         icon: HandCoins,
     },
-    {
-        title: 'Reports',
-        href: route('dashboard-reports'),
-        icon: Files,
-    },
+    // {
+    //     title: 'Reports',
+    //     href: route('dashboard-reports'),
+    //     icon: Files,
+    // },
 ];
 
 const footerNavItems: NavItem[] = [
