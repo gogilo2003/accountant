@@ -71,11 +71,23 @@ class TransactionRepository implements TransactionRepositoryInterface
             ->paginate(15);
     }
 
-    public function getByClient($clientId)
+    public function getByClient($clientId, $startDate = null, $endDate = null, $perPage = 15)
     {
-        return Transaction::where('client_id', $clientId)
-            ->orderBy('transaction_date', 'desc')
-            ->paginate(15);
+        $query = Transaction::where('client_id', $clientId)
+            ->with(['invoice'])
+            ->orderBy('transaction_date', 'desc');
+
+        if ($startDate) {
+            $query->where('transaction_date', '>=', $startDate);
+        }
+
+        if ($endDate) {
+            $query->where('transaction_date', '<=', $endDate);
+        }
+
+        return $perPage
+            ? $query->paginate($perPage)
+            : $query->get();
     }
 
     public function getByInvoice($invoiceId)
@@ -129,5 +141,53 @@ class TransactionRepository implements TransactionRepositoryInterface
             ->sum('amount');
 
         return $credits - $debits;
+    }
+    public function getTotalCredits($clientId = null, $startDate = null, $endDate = null)
+    {
+        $query = Transaction::where('direction', 'credit');
+
+        if ($clientId) {
+            $query->where('client_id', $clientId);
+        }
+
+        if ($startDate) {
+            $query->where('transaction_date', '>=', $startDate);
+        }
+
+        if ($endDate) {
+            $query->where('transaction_date', '<=', $endDate);
+        }
+
+        return $query->sum('amount');
+    }
+
+    public function getTotalDebits($clientId = null, $startDate = null, $endDate = null)
+    {
+        $query = Transaction::where('direction', 'debit');
+
+        if ($clientId) {
+            $query->where('client_id', $clientId);
+        }
+
+        if ($startDate) {
+            $query->where('transaction_date', '>=', $startDate);
+        }
+
+        if ($endDate) {
+            $query->where('transaction_date', '<=', $endDate);
+        }
+
+        return $query->sum('amount');
+    }
+
+    public function getPeriodicSummary($startDate, $endDate)
+    {
+        return Transaction::select(
+            DB::raw('SUM(CASE WHEN direction = "credit" THEN amount ELSE 0 END) as credits'),
+            DB::raw('SUM(CASE WHEN direction = "debit" THEN amount ELSE 0 END) as debits'),
+            DB::raw('COUNT(*) as count')
+        )
+            ->whereBetween('transaction_date', [$startDate, $endDate])
+            ->first();
     }
 }

@@ -3,29 +3,40 @@
 // app/Services/ReportService.php
 namespace App\Services;
 
+use Carbon\Carbon;
+use App\Interfaces\ClientRepositoryInterface;
 use App\Interfaces\InvoiceRepositoryInterface;
 use App\Interfaces\TransactionRepositoryInterface;
-use Carbon\Carbon;
 
 class ReportService
 {
     public function __construct(
         private InvoiceRepositoryInterface $invoiceRepository,
-        private TransactionRepositoryInterface $transactionRepository
+        private TransactionRepositoryInterface $transactionRepository,
+        private ClientRepositoryInterface $clientRepository
     ) {}
 
     public function getDashboardSummary()
     {
         $today = Carbon::today();
+        $monthStart = $today->copy()->startOfMonth();
+        $yearStart = $today->copy()->startOfYear();
+
+        // Get today's transactions summary
+        $todaySummary = $this->transactionRepository->getPeriodicSummary($today, $today);
+        $monthSummary = $this->transactionRepository->getPeriodicSummary($monthStart, $today);
+        $yearSummary = $this->transactionRepository->getPeriodicSummary($yearStart, $today);
 
         return [
             'revenue' => [
-                'today' => $this->transactionRepository
-                    ->getTotalCredits(null, $today, $today),
-                'month' => $this->transactionRepository
-                    ->getTotalCredits(null, $today->startOfMonth(), $today->endOfMonth()),
-                'year' => $this->transactionRepository
-                    ->getTotalCredits(null, $today->startOfYear(), $today->endOfYear())
+                'today' => $todaySummary->credits,
+                'month' => $monthSummary->credits,
+                'year' => $yearSummary->credits
+            ],
+            'expenses' => [
+                'today' => $todaySummary->debits,
+                'month' => $monthSummary->debits,
+                'year' => $yearSummary->debits
             ],
             'outstanding' => $this->invoiceRepository->getOutstandingRevenue(),
             'invoices' => [
@@ -39,12 +50,16 @@ class ReportService
 
     public function getProfitLossReport($startDate, $endDate)
     {
+        $summary = $this->transactionRepository->getPeriodicSummary($startDate, $endDate);
+
         return [
-            'income' => $this->transactionRepository->getTotalCredits(null, $startDate, $endDate),
-            'expenses' => $this->transactionRepository->getTotalDebits(null, $startDate, $endDate),
-            'net_profit' => $this->transactionRepository->getTotalCredits(null, $startDate, $endDate) -
-                $this->transactionRepository->getTotalDebits(null, $startDate, $endDate),
-            'invoices' => $this->invoiceRepository->getTotalRevenue('custom', $startDate, $endDate)
+            'income' => $summary->credits,
+            'expenses' => $summary->debits,
+            'net_profit' => $summary->credits - $summary->debits,
+            'period' => [
+                'start' => $startDate->format('Y-m-d'),
+                'end' => $endDate->format('Y-m-d')
+            ]
         ];
     }
 
@@ -73,8 +88,17 @@ class ReportService
         return [
             'client' => $this->clientRepository->find($clientId),
             'balance' => $this->transactionRepository->getClientBalance($clientId),
-            'transactions' => $this->transactionRepository->getByClient($clientId, $startDate, $endDate),
-            'invoices' => $this->invoiceRepository->getByClient($clientId)
+            'transactions' => $this->transactionRepository->getByClient(
+                $clientId,
+                $startDate,
+                $endDate,
+                null // No pagination for statements
+            ),
+            'invoices' => $this->invoiceRepository->getByClient($clientId),
+            'period' => [
+                'start' => $startDate ? $startDate->format('Y-m-d') : 'All time',
+                'end' => $endDate ? $endDate->format('Y-m-d') : 'Present'
+            ]
         ];
     }
 }
