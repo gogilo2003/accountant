@@ -12,7 +12,7 @@ class ClientController extends Controller
 
     public function index(Request $request)
     {
-        return Inertia::render('Clients/Index', [
+        return Inertia::render('clients/Index', [
             'clients' => $this->clientService->getAllClients($request->all()),
             'filters' => $request->only(['search'])
         ]);
@@ -20,7 +20,7 @@ class ClientController extends Controller
 
     public function create()
     {
-        return Inertia::render('Clients/Create');
+        return Inertia::render('clients/Create');
     }
 
     public function store(Request $request)
@@ -40,7 +40,7 @@ class ClientController extends Controller
 
     public function show($id)
     {
-        return Inertia::render('Clients/Show', [
+        return Inertia::render('clients/Show', [
             'client' => $this->clientService->getClientById($id),
             'financialSummary' => $this->clientService->getClientFinancialSummary($id)
         ]);
@@ -48,7 +48,7 @@ class ClientController extends Controller
 
     public function edit($id)
     {
-        return Inertia::render('Clients/Edit', [
+        return Inertia::render('clients/Edit', [
             'client' => $this->clientService->getClientById($id)
         ]);
     }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowUpRight, ArrowDownRight, AlertCircle, DollarSign, Users, CreditCard } from 'lucide-vue-next';
+import { ArrowUpRight, ArrowDownRight, AlertCircle, DollarSign, Users, CreditCard, Currency } from 'lucide-vue-next';
 
 const props = defineProps({
     title: {
@@ -24,6 +24,10 @@ const props = defineProps({
         default: 0
     },
     link: {
+        type: String,
+        default: ''
+    },
+    unit: {
         type: String,
         default: ''
     }
@@ -59,7 +63,7 @@ const iconComponent = icons[props.icon] || DollarSign;
 
         <div class="mt-2">
             <p class="text-2xl font-semibold">
-                {{ typeof value === 'number' ? `$${value.toLocaleString()}` : value }}
+                {{ typeof value === 'number' ? `${unit} ${value.toLocaleString()}` : value }}
             </p>
         </div>
 

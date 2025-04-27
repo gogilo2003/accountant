@@ -48,9 +48,9 @@ const breadcrumbs: BreadcrumbItem[] = [
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
             <!-- Stats Overview -->
             <div class="grid auto-rows-min gap-4 md:grid-cols-4">
-                <StatCard title="Total Revenue" :value="stats.revenue" icon="dollar" trend="up" :percentage="12.5"
-                    link="dashboard-reports-profit-loss" />
-                <StatCard title="Outstanding" :value="stats.outstanding" icon="alert-circle" trend="down"
+                <StatCard unit="Ksh" title="Total Revenue" :value="stats.revenue" icon="dollar" trend="up"
+                    :percentage="12.5" link="dashboard-reports-profit-loss" />
+                <StatCard unit="Ksh" title="Outstanding" :value="stats.outstanding" icon="alert-circle" trend="down"
                     :percentage="8.2" link="dashboard-invoices" />
                 <StatCard title="Active Clients" :value="stats.clients" icon="users" trend="up" :percentage="5.7"
                     link="dashboard-clients" />
