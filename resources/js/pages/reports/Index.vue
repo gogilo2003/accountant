@@ -10,15 +10,15 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: route('dashboard'),
     },
     {
-        title: 'Clients',
-        href: route('dashboard-clients'),
+        title: 'Reports',
+        href: route('dashboard-reports'),
     },
 ];
 </script>
 
 <template>
 
-    <Head title="Clients" />
+    <Head title="Reports" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
