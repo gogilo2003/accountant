@@ -13,4 +13,7 @@ interface ClientRepositoryInterface
     public function paginate($perPage = 10);
     public function search($query);
     public function countActiveClients(): int;
+    public function getClientBalance($clientId): float;
+    public function getOpenInvoicesCount($clientId): int;
+    public function getTransactionsCount($clientId): int;
 }

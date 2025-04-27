@@ -2,8 +2,10 @@
 
 namespace App\Repositories;
 
-use App\Interfaces\ClientRepositoryInterface;
 use App\Models\Client;
+use App\Models\Invoice;
+use App\Models\Transaction;
+use App\Interfaces\ClientRepositoryInterface;
 
 class ClientRepository implements ClientRepositoryInterface
 {
@@ -52,5 +54,30 @@ class ClientRepository implements ClientRepositoryInterface
         return Client::whereHas('transactions', function ($query) {
             $query->where('transaction_date', '>=', now()->subMonths(3));
         })->count();
+    }
+    public function getClientBalance($clientId): float
+    {
+        $credits = Transaction::where('client_id', $clientId)
+            ->where('direction', 'credit')
+            ->sum('amount');
+
+        $debits = Transaction::where('client_id', $clientId)
+            ->where('direction', 'debit')
+            ->sum('amount');
+
+        return $credits - $debits;
+    }
+
+    public function getOpenInvoicesCount($clientId): int
+    {
+        return Invoice::where('client_id', $clientId)
+            ->where('status', 'sent')
+            ->count();
+    }
+
+    public function getTransactionsCount($clientId): int
+    {
+        return Transaction::where('client_id', $clientId)
+            ->count();
     }
 }

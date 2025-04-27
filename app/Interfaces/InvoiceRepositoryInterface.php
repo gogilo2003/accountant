@@ -17,7 +17,7 @@ interface InvoiceRepositoryInterface
     public function search($query);
 
     // Client Relationships
-    public function getByClient($clientId);
+    public function getByClient($clientId, $limit = 5);
     public function getClientInvoicesSummary($clientId);
 
     // Status Management

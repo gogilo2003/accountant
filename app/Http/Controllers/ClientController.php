@@ -20,7 +20,7 @@ class ClientController extends Controller
 
     public function create()
     {
-        return Inertia::render('clients/Create');
+        return Inertia::render('clients/Client');
     }
 
     public function store(Request $request)
@@ -34,7 +34,7 @@ class ClientController extends Controller
 
         $client = $this->clientService->createClient($validated);
 
-        return redirect()->route('clients.show', $client->id)
+        return redirect()->route('dashboard-clients-show', $client->id)
             ->with('success', 'Client created successfully');
     }
 
@@ -42,13 +42,13 @@ class ClientController extends Controller
     {
         return Inertia::render('clients/Show', [
             'client' => $this->clientService->getClientById($id),
-            'financialSummary' => $this->clientService->getClientFinancialSummary($id)
+            'financialSummary' => $this->clientService->getFinancialSummary($id)
         ]);
     }
 
     public function edit($id)
     {
-        return Inertia::render('clients/Edit', [
+        return Inertia::render('clients/Client', [
             'client' => $this->clientService->getClientById($id)
         ]);
     }
@@ -64,14 +64,14 @@ class ClientController extends Controller
 
         $this->clientService->updateClient($id, $validated);
 
-        return redirect()->route('clients.show', $id)
+        return redirect()->route('dashboard-clients-show', $id)
             ->with('success', 'Client updated successfully');
     }
 
     public function destroy($id)
     {
         $this->clientService->deleteClient($id);
-        return redirect()->route('clients.index')
+        return redirect()->route('dashboard-clients')
             ->with('success', 'Client deleted successfully');
     }
 }

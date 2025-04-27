@@ -70,11 +70,12 @@ class InvoiceRepository implements InvoiceRepositoryInterface
             ->paginate(10);
     }
 
-    public function getByClient($clientId)
+    public function getByClient($clientId, $limit = 5)
     {
         return Invoice::where('client_id', $clientId)
-            ->orderBy('issue_date', 'desc')
-            ->paginate(10);
+            ->orderBy('created_at', 'desc')
+            ->limit($limit)
+            ->get();
     }
 
     public function getByStatus($status)
