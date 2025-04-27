@@ -7,9 +7,31 @@ Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('home');
 
-Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::prefix('dashboard')
+    ->name('dashboard')
+    ->middleware(['auth', 'verified'])
+    ->group(function () {
 
-require __DIR__.'/settings.php';
-require __DIR__.'/auth.php';
+        Route::get('', function () {
+            return Inertia::render('Dashboard');
+        });
+
+        Route::get('clients', function () {
+            return Inertia::render('clients/Index');
+        })->name('-clients');
+
+        Route::get('invoices', function () {
+            return Inertia::render('invoices/Index');
+        })->name('-invoices');
+
+        Route::get('transactions', function () {
+            return Inertia::render('transactions/Index');
+        })->name('-transactions');
+
+        Route::get('reports', function () {
+            return Inertia::render('reports/Index');
+        })->name('-reports');
+    });
+
+require __DIR__ . '/settings.php';
+require __DIR__ . '/auth.php';
