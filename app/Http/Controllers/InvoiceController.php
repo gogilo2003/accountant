@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\InvoiceService;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Http\Request;
+use App\Services\ClientService;
+use App\Services\InvoiceService;
 
 class InvoiceController extends Controller
 {
-    public function __construct(private InvoiceService $invoiceService) {}
+    public function __construct(
+        private InvoiceService $invoiceService,
+        private ClientService $clientService
+    ) {}
 
     public function index(Request $request)
     {
@@ -20,8 +24,9 @@ class InvoiceController extends Controller
 
     public function create()
     {
-        return Inertia::render('invoices/invoice', [
-            'nextNumber' => $this->invoiceService->generateInvoiceNumber()
+        return Inertia::render('invoices/Invoice', [
+            'nextNumber' => $this->invoiceService->generateInvoiceNumber(),
+            'clients' => $this->clientService->getAllClients([], [], false),
         ]);
     }
 
@@ -53,7 +58,8 @@ class InvoiceController extends Controller
     public function edit($id)
     {
         return Inertia::render('invoices/Invoice', [
-            'invoice' => $this->invoiceService->getInvoiceById($id)
+            'invoice' => $this->invoiceService->getInvoiceById($id),
+            'clients' => $this->clientService->getAllClients(),
         ]);
     }
 

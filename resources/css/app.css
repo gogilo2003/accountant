@@ -190,21 +190,23 @@
 }
 
 @utility btn-secondary {
-    @apply bg-secondary text-secondary-foreground py-2 px-6 rounded-full;
+    @apply bg-secondary text-secondary-foreground py-2 px-4 rounded-full;
     @apply hover:bg-secondary/80 focus-visible:ring-2 focus-visible:ring-ring;
     @apply focus-visible:ring-offset-2 focus-visible:ring-offset-background;
     @apply transition-colors duration-200 ease-in-out;
     @apply dark:bg-secondary/80 dark:text-secondary-foreground;
     @apply dark:hover:bg-secondary/90 dark:focus-visible:ring-offset-background;
     @apply dark:focus-visible:ring-offset-background;
+    @apply flex items-center justify-center gap-1;
 }
 
 @utility btn-primary {
-    @apply bg-primary text-primary-foreground py-2 px-6 rounded-full;
+    @apply bg-primary text-primary-foreground py-2 px-4 rounded-full;
     @apply hover:bg-primary/80 focus-visible:ring-2 focus-visible:ring-ring;
     @apply focus-visible:ring-offset-2 focus-visible:ring-offset-background;
     @apply transition-colors duration-200 ease-in-out;
     @apply dark:bg-primary/80 dark:text-primary-foreground;
     @apply dark:hover:bg-primary/90 dark:focus-visible:ring-offset-background;
     @apply dark:focus-visible:ring-offset-background;
+    @apply flex items-center justify-center gap-1;
 }

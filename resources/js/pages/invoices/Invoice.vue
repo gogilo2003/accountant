@@ -2,11 +2,16 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { FileText, ArrowLeft, Save } from 'lucide-vue-next';
-import ClientSelect from '@/Components/ClientSelect.vue';
-import DatePicker from '@/Components/DatePicker.vue';
+import { FileText, ArrowLeft, Save, Trash2 } from 'lucide-vue-next';
+import ClientSelect from '@/components/ClientSelect.vue';
+import DatePicker from '@/components/DatePicker.vue';
+import { computed } from 'vue';
 
 const props = defineProps({
+    nextNumber: {
+        type: Number,
+        default: null
+    },
     invoice: {
         type: Object,
         default: null
@@ -24,12 +29,12 @@ const props = defineProps({
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: route('dashboard') },
     { title: 'Invoices', href: route('dashboard-invoices') },
-    { title: props.isEdit ? 'Edit Invoice' : 'Create Invoice' },
+    { title: props.isEdit ? 'Edit Invoice' : 'Create Invoice', href: '' },
 ];
 
 const form = useForm({
     client_id: props.invoice?.client_id || '',
-    invoice_number: props.invoice?.invoice_number || '',
+    invoice_number: props.invoice?.invoice_number || props.nextNumber || '',
     issue_date: props.invoice?.issue_date || new Date().toISOString().split('T')[0],
     due_date: props.invoice?.due_date || '',
     items: props.invoice?.items || [
@@ -70,6 +75,7 @@ const submit = () => {
     <Head :title="isEdit ? 'Edit Invoice' : 'Create Invoice'" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
+        <pre>{{ invoice }}</pre>
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
             <div class="flex items-center justify-between">
                 <h1 class="text-2xl font-bold flex items-center gap-2">

@@ -29,7 +29,7 @@ const search = ref(props.filters.search || '');
 
 const columns = [
     { key: 'invoice_number', label: 'Invoice #', sortable: true },
-    { key: 'client.name', label: 'Client', sortable: true },
+    { key: 'client', label: 'Client', sortable: true },
     { key: 'issue_date', label: 'Date', sortable: true },
     { key: 'amount', label: 'Amount', sortable: true, align: 'right' },
     { key: 'status', label: 'Status', sortable: true, align: 'center' },
@@ -80,7 +80,6 @@ const columns = [
                 </div>
             </div>
 
-            <pre>{{ invoices.data[0] }}</pre>
             <!-- Invoices Table -->
             <div
                 class="flex-1 rounded-xl border border-sidebar-border/70 bg-white shadow-sm dark:border-sidebar-border dark:bg-gray-800">
@@ -101,6 +100,12 @@ const columns = [
                         </td>
                     </template>
 
+                    <template #cell-client="{ item }">
+                        <td class="px-6 py-4">
+                            {{ item.client.name }}
+                        </td>
+                    </template>
+
                     <template #cell-amount="{ item }">
                         <td class="px-6 py-4">
                             Ksh {{ item.amount.toLocaleString() }}
@@ -109,14 +114,12 @@ const columns = [
 
                     <template #cell-status="{ item }">
                         <td class="px-6 py-4">
-                            {{ new Date(item.issue_date).toLocaleDateString() }}
                             <StatusBadge :status="item.status" />
                         </td>
                     </template>
 
                     <template #cell-actions="{ item }">
                         <td class="px-6 py-4">
-                            {{ new Date(item.issue_date).toLocaleDateString() }}
                             <div class="flex justify-end gap-2">
                                 <Link :href="route('dashboard-invoices-edit', item.id)" class="btn-icon" title="Edit">
                                 <Pencil class="h-4 w-4" />

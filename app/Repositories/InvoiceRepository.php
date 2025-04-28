@@ -58,7 +58,8 @@ class InvoiceRepository implements InvoiceRepositoryInterface
     {
         return Invoice::with($relations)
             ->orderBy('issue_date', 'desc')
-            ->paginate($perPage);
+            ->paginate($perPage)
+            ->through(fn(Invoice $invoice) => $this->mapInvoice($invoice));
     }
 
     public function search($query, $relations = [])
@@ -69,7 +70,8 @@ class InvoiceRepository implements InvoiceRepositoryInterface
             ->orWhereHas('client', function ($q) use ($query) {
                 $q->where('name', 'like', "%{$query}%");
             })
-            ->paginate(10);
+            ->paginate(10)
+            ->through(fn(Invoice $invoice) => $this->mapInvoice($invoice));
     }
 
     public function getByClient($clientId, $limit = 5)
@@ -207,5 +209,34 @@ class InvoiceRepository implements InvoiceRepositoryInterface
             ->orderBy('issue_date', 'desc')
             ->limit($limit)
             ->get();
+    }
+
+    protected function mapInvoice(Invoice $invoice)
+    {
+        return [
+            'id' => $invoice->id,
+            'invoice_number' => $invoice->invoice_number,
+            'issue_date' => $invoice->issue_date->format('Y-m-d'),
+            'due_date' => $invoice->due_date->format('Y-m-d'),
+            'amount' => $invoice->amount,
+            'status' => $invoice->status,
+            'transactions' => $invoice->transactions->map(function (Transaction $transaction) {
+                return [
+                    'id' => $transaction->id,
+                    'type' => $transaction->type,
+                    'amount' => $transaction->amount,
+                    'transaction_date' => $transaction->transaction_date->format('Y-m-d'),
+                    'description' => $transaction->description,
+                    'reference' => $transaction->reference
+                ];
+            }),
+            'client' => [
+                'id' => $invoice->client->id,
+                'name' => $invoice->client->name,
+                'email' => $invoice->client->email,
+                'phone' => $invoice->client->phone,
+                'address' => $invoice->client->address
+            ]
+        ];
     }
 }

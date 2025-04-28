@@ -5,24 +5,34 @@ namespace App\Services;
 
 use App\Models\Invoice;
 use App\Models\Transaction;
+use App\Repositories\ClientRepository;
+use App\Repositories\InvoiceRepository;
+use App\Repositories\TransactionRepository;
 use App\Interfaces\ClientRepositoryInterface;
 use App\Interfaces\InvoiceRepositoryInterface;
 use App\Interfaces\TransactionRepositoryInterface;
 
 class ClientService
 {
+    protected ClientRepository $clientRepository;
+    protected InvoiceRepository $invoiceRepository;
+    protected TransactionRepository $transactionRepository;
     public function __construct(
-        private ClientRepositoryInterface $clientRepository,
-        private InvoiceRepositoryInterface $invoiceRepository,
-        private TransactionRepositoryInterface $transactionRepository
-    ) {}
+        ClientRepositoryInterface $clientRepository,
+        InvoiceRepositoryInterface $invoiceRepository,
+        TransactionRepositoryInterface $transactionRepository
+    ) {
+        $this->clientRepository = $clientRepository;
+        $this->invoiceRepository = $invoiceRepository;
+        $this->transactionRepository = $transactionRepository;
+    }
 
     // Basic CRUD Operations
-    public function getAllClients(array $filters = [])
+    public function getAllClients(array $filters = [], $relations = [], $paginate = true)
     {
         return isset($filters['search'])
             ? $this->clientRepository->search($filters['search'])
-            : $this->clientRepository->paginate();
+            : ($paginate ? $this->clientRepository->paginate() : $this->clientRepository->all());
     }
 
     public function getClientById($id)
