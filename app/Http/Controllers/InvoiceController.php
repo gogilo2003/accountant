@@ -12,15 +12,15 @@ class InvoiceController extends Controller
 
     public function index(Request $request)
     {
-        return Inertia::render('Invoices/Index', [
-            'invoices' => $this->invoiceService->getAllInvoices($request->all()),
+        return Inertia::render('invoices/Index', [
+            'invoices' => $this->invoiceService->getAllInvoices($request->all(), ['client', 'transactions']),
             'filters' => $request->only(['search', 'status'])
         ]);
     }
 
     public function create()
     {
-        return Inertia::render('Invoices/Create', [
+        return Inertia::render('invoices/invoice', [
             'nextNumber' => $this->invoiceService->generateInvoiceNumber()
         ]);
     }
@@ -44,15 +44,15 @@ class InvoiceController extends Controller
 
     public function show($id)
     {
-        return Inertia::render('Invoices/Show', [
-            'invoice' => $this->invoiceService->getInvoiceById($id),
+        return Inertia::render('invoices/Show', [
+            'invoice' => $this->invoiceService->getInvoiceById($id, ['client']),
             'transactions' => $this->invoiceService->getInvoiceTransactions($id)
         ]);
     }
 
     public function edit($id)
     {
-        return Inertia::render('Invoices/Edit', [
+        return Inertia::render('invoices/Invoice', [
             'invoice' => $this->invoiceService->getInvoiceById($id)
         ]);
     }

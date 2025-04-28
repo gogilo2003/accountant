@@ -6,7 +6,8 @@ import { ref } from 'vue';
 import Table from '@/components/Table.vue';
 import Pagination from '@/components/Pagination.vue';
 import SearchInput from '@/components/SearchInput.vue';
-import { Pencil, Trash } from 'lucide-vue-next';
+import { List, Pencil, Trash } from 'lucide-vue-next';
+import Button from '@/components/ui/button/Button.vue';
 
 const props = defineProps({
     clients: {
@@ -94,10 +95,13 @@ const columns = [
                             <Link :href="route('dashboard-clients-edit', item.id)" class="btn-icon">
                             <Pencil class="h-4 w-4" />
                             </Link>
-                            <Button :href="route('dashboard-clients-edit', item.id)"
+                            <Link :href="route('dashboard-clients-show', item.id)" class="btn-icon">
+                            <List class="h-4 w-4" />
+                            </Link>
+                            <Link method="delete" :href="route('dashboard-clients-destroy', item.id)"
                                 class="btn-icon cursor-pointer text-red-500">
-                                <Trash class="h-4 w-4" />
-                            </Button>
+                            <Trash class="h-4 w-4" />
+                            </Link>
                         </td>
                     </template>
                 </Table>

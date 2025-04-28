@@ -16,9 +16,10 @@ class InvoiceRepository implements InvoiceRepositoryInterface
         return Invoice::with(['client', 'transactions'])->get();
     }
 
-    public function find($id)
+    public function find($id, $relations = [])
     {
-        return Invoice::with(['client', 'transactions'])->findOrFail($id);
+        $relations = array_merge(['client', 'transactions'], $relations);
+        return Invoice::with($relations)->findOrFail($id);
     }
 
     public function create(array $data)
@@ -53,16 +54,17 @@ class InvoiceRepository implements InvoiceRepositoryInterface
         return $invoice->delete();
     }
 
-    public function paginate($perPage = 10)
+    public function paginate($perPage = 10, $relations = [])
     {
-        return Invoice::with(['client'])
+        return Invoice::with($relations)
             ->orderBy('issue_date', 'desc')
             ->paginate($perPage);
     }
 
-    public function search($query)
+    public function search($query, $relations = [])
     {
-        return Invoice::where('invoice_number', 'like', "%{$query}%")
+        return Invoice::with($relations)
+            ->where('invoice_number', 'like', "%{$query}%")
             ->orWhere('description', 'like', "%{$query}%")
             ->orWhereHas('client', function ($q) use ($query) {
                 $q->where('name', 'like', "%{$query}%");

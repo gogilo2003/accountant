@@ -3,27 +3,35 @@
 // app/Services/InvoiceService.php
 namespace App\Services;
 
+use App\Repositories\InvoiceRepository;
+use App\Repositories\TransactionRepository;
 use App\Interfaces\InvoiceRepositoryInterface;
 use App\Interfaces\TransactionRepositoryInterface;
 
 class InvoiceService
 {
+    protected InvoiceRepository $invoiceRepository;
+    protected TransactionRepository $transactionRepository;
     public function __construct(
-        private InvoiceRepositoryInterface $invoiceRepository,
-        private TransactionRepositoryInterface $transactionRepository
-    ) {}
-
-    // Basic CRUD Operations
-    public function getAllInvoices(array $filters = [])
-    {
-        return isset($filters['search'])
-            ? $this->invoiceRepository->search($filters['search'])
-            : $this->invoiceRepository->paginate();
+        InvoiceRepositoryInterface $invoiceRepository,
+        TransactionRepositoryInterface $transactionRepository
+    ) {
+        $this->invoiceRepository = $invoiceRepository;
+        $this->transactionRepository = $transactionRepository;
     }
 
-    public function getInvoiceById($id)
+    // Basic CRUD Operations
+    public function getAllInvoices(array $filters = [], $relations = [])
     {
-        return $this->invoiceRepository->find($id);
+        $relations = array_merge(['client', 'transactions'], $relations);
+        return isset($filters['search'])
+            ? $this->invoiceRepository->search($filters['search'], $relations)
+            : $this->invoiceRepository->paginate(null, $relations);
+    }
+
+    public function getInvoiceById($id, $relations = [])
+    {
+        return $this->invoiceRepository->find($id, $relations);
     }
 
     public function createInvoice(array $data)

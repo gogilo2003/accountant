@@ -189,14 +189,22 @@
     }
 }
 
-.btn-primary {
-    @apply inline-flex items-center rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600;
+@utility btn-secondary {
+    @apply bg-secondary text-secondary-foreground py-2 px-6 rounded-full;
+    @apply hover:bg-secondary/80 focus-visible:ring-2 focus-visible:ring-ring;
+    @apply focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+    @apply transition-colors duration-200 ease-in-out;
+    @apply dark:bg-secondary/80 dark:text-secondary-foreground;
+    @apply dark:hover:bg-secondary/90 dark:focus-visible:ring-offset-background;
+    @apply dark:focus-visible:ring-offset-background;
 }
 
-.btn-secondary {
-    @apply inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50;
-}
-
-.btn-icon {
-    @apply inline-flex items-center rounded-md bg-white p-1.5 text-gray-400 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50;
+@utility btn-primary {
+    @apply bg-primary text-primary-foreground py-2 px-6 rounded-full;
+    @apply hover:bg-primary/80 focus-visible:ring-2 focus-visible:ring-ring;
+    @apply focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+    @apply transition-colors duration-200 ease-in-out;
+    @apply dark:bg-primary/80 dark:text-primary-foreground;
+    @apply dark:hover:bg-primary/90 dark:focus-visible:ring-offset-background;
+    @apply dark:focus-visible:ring-offset-background;
 }
